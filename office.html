@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inpravia.com • Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --red-500: #ef4444;
+      --green-500: #10b981;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+
+    .hidden { display: none !important; }
+
+    #loginPage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .login-card h2 { margin-bottom: 1.8rem; color: var(--primary-dark); }
+
+    .login-card input {
+      width: 100%;
+      padding: 0.9rem;
+      margin: 0.8rem 0;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+    }
+
+    .login-card button {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .login-card button:hover { background: var(--primary-dark); }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 { font-size: 1.6rem; color: var(--primary-dark); }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #profilePic {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      cursor: pointer;
+    }
+
+    #profileUpload { display: none; }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 1.5rem;
+      background: white;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.05rem;
+      color: var(--gray-600);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 0 0 12px 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      border: 1px solid var(--gray-200);
+      border-top: none;
+    }
+
+    .tab-content.active { display: block; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-200);
+    }
+
+    .card h3 { color: var(--gray-600); font-size: 0.95rem; margin-bottom: 0.75rem; }
+    .card .number { font-size: 2.2rem; font-weight: 700; color: var(--primary-dark); }
+
+    .search-add { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+    }
+
+    .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-600); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 1rem; text-align: left; }
+    th { background: var(--gray-100); font-weight: 600; color: var(--gray-700); }
+    tr { border-bottom: 1px solid var(--gray-200); }
+
+    .status {
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .present { background: rgba(16,185,129,0.15); color: var(--green-500); }
+    .absent  { background: rgba(239,68,68,0.15); color: var(--red-500); }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--gray-600);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 6px;
+      margin-right: 0.5rem;
+    }
+
+    .action-btn:hover { background: var(--gray-100); }
+
+    .delete-btn { color: var(--red-500) !important; }
+
+    .leave-grid, .payslip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .leave-card, .payslip-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 1.25rem;
+      background: white;
+    }
+
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 580px;
+      width: 95%;
+      padding: 1.8rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close { float: right; font-size: 1.8rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage">
+  <div class="login-card">
+    <h2>OfficeHub Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required autocomplete="off"/>
+      <input type="password" id="password" placeholder="Password" required/>
+      <button type="submit">Sign In</button>
+    </form>
+    <p style="margin-top:1rem; color:#666; font-size:0.9rem;">Use: <strong>admin</strong> / <strong>1234</strong></p>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app" class="hidden">
+
+  <header >
+   
+    <div  class="top-bar" >
+    
+      <label for="profileUpload">
+       
+        <img id="profilePic" src="https://via.placeholder.com/80?text=Admin" alt="Profile"/>
+        <h1>Inpravia.com</h1>
+      </label>
+      
+      
+      <div class="user-info">
+        
+        <input type="file" id="profileUpload" accept="image/*"/>
+        <span>Admin</span>
+        <button class="btn-primary" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="leaves">Leave Requests</button>
+      <button class="tab-btn" data-tab="payslips">Payslips</button>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="tab-content active">
+      <div class="stats">
+        <div class="card"><h3>Total Employees</h3><div class="number" id="totalCount">0</div></div>
+        <div class="card"><h3>Present Today</h3><div class="number" id="presentCount">0</div></div>
+        <div class="card"><h3>Absent Today</h3><div class="number" id="absentCount">0</div></div>
+      </div>
+
+      <div class="search-add">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search employees..." onkeyup="filterEmployees()"/>
+        </div>
+        <button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex'">
+          <i class="fa-solid fa-plus"></i> Add Employee
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Location</th>
+            <th>Mobile</th>
+            <th>Email</th>
+            <th>CTC (₹)</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="employeeBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Leaves and Payslips sections remain unchanged -->
+    <!-- ... (keep your existing leaves and payslips code here) ... -->
+
+  </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal" id="addModal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('addModal').style.display='none'">×</span>
+    <h2>Add New Employee</h2>
+
+    <div class="form-group">
+      <label>Role</label>
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option>IGNLP</option>
+        <option>IMRPL</option>
+        <option>IBPL</option>
+        <option>MIPL</option>
+        <option>SIFI</option>
+        <option>INNLIVE</option>
+      </select>
+    </div>
+  <form id="addEmployeeForm">
+      <div class="form-group"><label>Name</label><input type="text" id="name" required></div>
+      <div class="form-group"><label>Employee ID</label><input type="text" id="empId" required placeholder="e.g. E001"></div>
+
+     
+      <div class="form-group">
+        <label>Department</label>
+        <select id="department" required>
+          <option value="">Select</option>
+          <option>Development</option>
+          <option>Design</option>
+          <option>Marketing</option>
+          <option>HR</option>
+          <option>Finance</option>
+          <option>Operations</option>
+          <option>Sales</option>
+        </select>
+      </div>
+
+      <div class="form-group"><label>Location</label><input type="text" id="location" placeholder="e.g. Patna, Delhi" required></div>
+
+      <div class="form-group"><label>Mobile No</label><input type="tel" id="mobile" pattern="[0-9]{10}" placeholder="10-digit number" required></div>
+      <div class="form-group"><label>WhatsApp No</label><input type="tel" id="whatsapp" pattern="[0-9]{10}" placeholder="10-digit number (optional)"></div>
+      <div class="form-group"><label>Emergency Contact No</label><input type="tel" id="emergencyContact" pattern="[0-9]{10}" placeholder="10-digit number" required></div>
+
+      <div class="form-group">
+        <label>Blood Group</label>
+        <select id="bloodGroup">
+          <option value="">Select</option>
+          <option>A+</option>
+          <option>A-</option>
+          <option>B+</option>
+          <option>B-</option>
+          <option>O+</option>
+          <option>O-</option>
+          <option>AB+</option>
+          <option>AB-</option>
+        </select>
+      </div>
+
+      <div class="form-group"><label>Date of Joining</label><input type="date" id="joiningDate" required></div>
+      <div class="form-group"><label>CTC (Annual in ₹)</label><input type="number" id="ctc" min="0" step="1000" placeholder="e.g. 600000" required></div>
+
+      <div class="form-group"><label>Email</label><input type="email" id="email" required></div>
+      <div class="form-group"><label>Default In Time</label><input type="time" id="inTime" value="10:00"></div>
+      <div class="form-group"><label>Default Out Time</label><input type="time" id="outTime" value="18:00"></div>
+
+      <button type="submit" class="btn-primary" style="width:100%; margin-top:1.5rem;">Save Employee</button>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Employee Modal (with same new fields) -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('editModal').style.display='none'">×</span>
+    <h2>Edit Employee</h2>
+    <form id="editEmployeeForm">
+      <input type="hidden" id="editEmpId">
+      <div class="form-group">
+        <label>Role</label>
+        <select id="editRole" required>
+          <option>IGNLP</option>
+          <option>IMRPL</option>
+          <option>IBPL</option>
+          <option>MIPL</option>
+          <option>SIFI</option>
+          <option>INNLIVE</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Name</label><input type="text" id="editName" required></div>
+
+      
+
+      <div class="form-group">
+        <label>Department</label>
+        <select id="editDepartment" required>
+          <option>Development</option>
+          <option>Design</option>
+          <option>Marketing</option>
+          <option>HR</option>
+          <option>Finance</option>
+          <option>Operations</option>
+          <option>Sales</option>
+        </select>
+      </div>
+
+      <div class="form-group"><label>Location</label><input type="text" id="editLocation" required></div>
+
+      <div class="form-group"><label>Mobile No</label><input type="tel" id="editMobile" pattern="[0-9]{10}" required></div>
+      <div class="form-group"><label>WhatsApp No</label><input type="tel" id="editWhatsapp" pattern="[0-9]{10}"></div>
+      <div class="form-group"><label>Emergency Contact No</label><input type="tel" id="editEmergencyContact" pattern="[0-9]{10}" required></div>
+
+      <div class="form-group">
+        <label>Blood Group</label>
+        <select id="editBloodGroup">
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+        </select>
+      </div>
+
+      <div class="form-group"><label>Date of Joining</label><input type="date" id="editJoiningDate" required></div>
+      <div class="form-group"><label>CTC (Annual in ₹)</label><input type="number" id="editCtc" min="0" step="1000" required></div>
+
+      <div class="form-group"><label>Email</label><input type="email" id="editEmail" required></div>
+      <div class="form-group"><label>Default In Time</label><input type="time" id="editInTime" value="10:00"></div>
+      <div class="form-group"><label>Default Out Time</label><input type="time" id="editOutTime" value="18:00"></div>
+
+      <button type="submit" class="btn-primary" style="width:100%; margin-top:1.5rem;">Update Employee</button>
+    </form>
+  </div>
+</div>
+
+<!-- Leave Request Modal (unchanged) -->
+<div class="modal" id="leaveModal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('leaveModal').style.display='none'">×</span>
+    <h2>Request Leave</h2>
+    <form id="leaveForm">
+      <div class="form-group">
+        <label>Employee</label>
+        <select id="leaveEmpId" required></select>
+      </div>
+      <div class="form-group"><label>From</label><input type="date" id="leaveFrom" required></div>
+      <div class="form-group"><label>To</label><input type="date" id="leaveTo" required></div>
+      <div class="form-group"><label>Reason</label><textarea id="leaveReason" rows="3" required></textarea></div>
+      <button type="submit" class="btn-primary" style="width:100%;">Submit Request</button>
+    </form>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// Data
+// ──────────────────────────────────────────────
+let employees = JSON.parse(localStorage.getItem('employees')) || [
+  {id:"E001", name:"Amit Kumar", role:"IGNLP", dept:"Development", location:"Patna", mobile:"9876543210", whatsapp:"9876543210", emergencyContact:"9123456789", bloodGroup:"O+", joiningDate:"2024-01-15", ctc:720000, email:"amit@company.in", inTime:"10:00", outTime:"18:00", pic:"", present:true},
+  {id:"E002", name:"Priya Singh", role:"INNLIVE", dept:"HR", location:"Delhi", mobile:"9123456789", whatsapp:"", emergencyContact:"9988776655", bloodGroup:"A+", joiningDate:"2024-03-01", ctc:480000, email:"priya@company.in", inTime:"10:00", outTime:"18:00", pic:"", present:false},
+];
+
+let leaves = JSON.parse(localStorage.getItem('leaves')) || [];
+
+let payslips = {
+  "E001": {month:"March 2025", basic:52000, hra:18000, bonus:5000, deduction:4000, net:75000},
+  "E002": {month:"March 2025", basic:48000, hra:16000, bonus:3000, deduction:3500, net:66500},
+};
+
+function saveData() {
+  localStorage.setItem('employees', JSON.stringify(employees));
+  localStorage.setItem('leaves', JSON.stringify(leaves));
+}
+
+// Profile Picture (admin) - unchanged
+document.getElementById('profileUpload').onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('profilePic').src = ev.target.result;
+    localStorage.setItem('adminPic', ev.target.result);
+  };
+  reader.readAsDataURL(file);
+};
+
+if (localStorage.getItem('adminPic')) {
+  document.getElementById('profilePic').src = localStorage.getItem('adminPic');
+}
+
+// Login / Logout - unchanged
+document.getElementById('loginForm').onsubmit = e => {
+  e.preventDefault();
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value;
+  if (u === 'admin' && p === '1234') {
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    initApp();
+  } else {
+    alert('Invalid username or password');
+  }
+};
+
+function logout() {
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('loginForm').reset();
+}
+
+// Tabs - unchanged
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+// ──────────────────────────────────────────────
+// Render Employees (updated columns)
+function renderEmployees() {
+  const tbody = document.getElementById('employeeBody');
+  tbody.innerHTML = '';
+  const term = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+
+  employees
+    .filter(e => e.name.toLowerCase().includes(term) || e.id.toLowerCase().includes(term))
+    .forEach(emp => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><img src="${emp.pic || 'https://via.placeholder.com/40?text=' + emp.name[0]}" width="40" height="40" style="border-radius:50%"></td>
+        <td>${emp.name}</td>
+        <td>${emp.id}</td>
+        <td>${emp.role || '-'}</td>
+        <td>${emp.dept}</td>
+        <td>${emp.location || '-'}</td>
+        <td>${emp.mobile || '-'}</td>
+        <td>${emp.email}</td>
+        <td>${emp.ctc ? '₹' + emp.ctc.toLocaleString() : '-'}</td>
+        <td><span class="status ${emp.present?'present':'absent'}">${emp.present?'Present':'Absent'}</span></td>
+        <td>
+          <button class="action-btn" onclick="togglePresent('${emp.id}')" title="Toggle attendance">
+            <i class="fa-solid fa-user-check"></i>
+          </button>
+          <button class="action-btn" onclick="openEditModal('${emp.id}')" title="Edit employee">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button class="action-btn delete-btn" onclick="deleteEmployee('${emp.id}', '${emp.name.replace(/'/g,"\\'")}')" title="Delete employee">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  const total = employees.length;
+  const present = employees.filter(e => e.present).length;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('presentCount').textContent = present;
+  document.getElementById('absentCount').textContent = total - present;
+
+  updateLeaveSelect();
+  renderPayslips();
+}
+
+// Add Employee - updated
+document.getElementById('addEmployeeForm').onsubmit = e => {
+  e.preventDefault();
+  const newId = document.getElementById('empId').value.trim();
+  if (employees.some(e => e.id === newId)) {
+    alert('Employee ID already exists!');
+    return;
+  }
+
+  employees.push({
+    id: newId,
+    name: document.getElementById('name').value.trim(),
+    role: document.getElementById('role').value,
+    dept: document.getElementById('department').value,
+    location: document.getElementById('location').value.trim(),
+    mobile: document.getElementById('mobile').value.trim(),
+    whatsapp: document.getElementById('whatsapp').value.trim(),
+    emergencyContact: document.getElementById('emergencyContact').value.trim(),
+    bloodGroup: document.getElementById('bloodGroup').value,
+    joiningDate: document.getElementById('joiningDate').value,
+    ctc: Number(document.getElementById('ctc').value) || 0,
+    email: document.getElementById('email').value.trim(),
+    inTime: document.getElementById('inTime').value || "10:00",
+    outTime: document.getElementById('outTime').value || "18:00",
+    present: true,
+    pic: ''
+  });
+
+  saveData();
+  renderEmployees();
+  document.getElementById('addModal').style.display = 'none';
+  document.getElementById('addEmployeeForm').reset();
+};
+
+// Edit Employee - updated
+function openEditModal(id) {
+  const emp = employees.find(e => e.id === id);
+  if (!emp) return alert("Employee not found");
+
+  document.getElementById('editEmpId').value = emp.id;
+  document.getElementById('editName').value = emp.name;
+  document.getElementById('editRole').value = emp.role || '';
+  document.getElementById('editDepartment').value = emp.dept;
+  document.getElementById('editLocation').value = emp.location || '';
+  document.getElementById('editMobile').value = emp.mobile || '';
+  document.getElementById('editWhatsapp').value = emp.whatsapp || '';
+  document.getElementById('editEmergencyContact').value = emp.emergencyContact || '';
+  document.getElementById('editBloodGroup').value = emp.bloodGroup || '';
+  document.getElementById('editJoiningDate').value = emp.joiningDate || '';
+  document.getElementById('editCtc').value = emp.ctc || '';
+  document.getElementById('editEmail').value = emp.email;
+  document.getElementById('editInTime').value = emp.inTime || "10:00";
+  document.getElementById('editOutTime').value = emp.outTime || "18:00";
+
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+document.getElementById('editEmployeeForm').onsubmit = e => {
+  e.preventDefault();
+  const id = document.getElementById('editEmpId').value;
+  const emp = employees.find(e => e.id === id);
+  if (!emp) return;
+
+  emp.name = document.getElementById('editName').value.trim();
+  emp.role = document.getElementById('editRole').value;
+  emp.dept = document.getElementById('editDepartment').value;
+  emp.location = document.getElementById('editLocation').value.trim();
+  emp.mobile = document.getElementById('editMobile').value.trim();
+  emp.whatsapp = document.getElementById('editWhatsapp').value.trim();
+  emp.emergencyContact = document.getElementById('editEmergencyContact').value.trim();
+  emp.bloodGroup = document.getElementById('editBloodGroup').value;
+  emp.joiningDate = document.getElementById('editJoiningDate').value;
+  emp.ctc = Number(document.getElementById('editCtc').value) || 0;
+  emp.email = document.getElementById('editEmail').value.trim();
+  emp.inTime = document.getElementById('editInTime').value || "10:00";
+  emp.outTime = document.getElementById('editOutTime').value || "18:00";
+
+  saveData();
+  renderEmployees();
+  document.getElementById('editModal').style.display = 'none';
+};
+
+// Leave Management, Payslips, togglePresent, deleteEmployee, filterEmployees, updateLeaveSelect, renderLeaves, renderPayslips - remain unchanged
+// ... (copy your existing functions here if needed) ...
+
+function initApp() {
+  renderEmployees();
+  renderLeaves();
+}
+
+</script>
+</body>
+</html>
